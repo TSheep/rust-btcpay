@@ -82,11 +82,12 @@ pub enum InvoiceStatus {
     Expired,
     Paid,
     Confirmed,
-    Completed,
     Invalid,
     Settled,
     #[serde(rename = "marked")]
     Marked,
+    #[serde(rename = "complete")]
+    Complete
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
