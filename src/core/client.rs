@@ -85,11 +85,16 @@ impl BTCPayClient {
 
         println!("[btcpay] create_invoice response status: {}", response.status());
 
-        let mut intermediate = response
-            .json::<serde_json::Value>()
-            .await?;
+        let response_text = response.text().await?;
+        println!("[btcpay] create_invoice raw response: {}", response_text);
 
-        println!("[btcpay] create_invoice raw response: {}", serde_json::to_string_pretty(&intermediate).unwrap_or_else(|_| "Unable to serialize".to_string()));
+        let mut intermediate: serde_json::Value = match serde_json::from_str(&response_text) {
+            Ok(v) => v,
+            Err(e) => {
+                println!("[btcpay] create_invoice failed to parse JSON: {}", e);
+                return Err(Error::JSON(e));
+            }
+        };
 
         match serde_json::from_value(intermediate["data"].take()) {
             Ok(invoice) => {
@@ -115,11 +120,16 @@ impl BTCPayClient {
 
         println!("[btcpay] get_invoice response status: {}", response.status());
 
-        let mut intermediate = response
-            .json::<serde_json::Value>()
-            .await?;
+        let response_text = response.text().await?;
+        println!("[btcpay] get_invoice raw response: {}", response_text);
 
-        println!("[btcpay] get_invoice raw response: {}", serde_json::to_string_pretty(&intermediate).unwrap_or_else(|_| "Unable to serialize".to_string()));
+        let mut intermediate: serde_json::Value = match serde_json::from_str(&response_text) {
+            Ok(v) => v,
+            Err(e) => {
+                println!("[btcpay] get_invoice failed to parse JSON: {}", e);
+                return Err(Error::JSON(e));
+            }
+        };
 
         match serde_json::from_value(intermediate["data"].take()) {
             Ok(invoice) => {
@@ -142,11 +152,16 @@ impl BTCPayClient {
 
         println!("[btcpay] get_invoices response status: {}", response.status());
 
-        let mut intermediate = response
-            .json::<serde_json::Value>()
-            .await?;
+        let response_text = response.text().await?;
+        println!("[btcpay] get_invoices raw response: {}", response_text);
 
-        println!("[btcpay] get_invoices raw response: {}", serde_json::to_string_pretty(&intermediate).unwrap_or_else(|_| "Unable to serialize".to_string()));
+        let mut intermediate: serde_json::Value = match serde_json::from_str(&response_text) {
+            Ok(v) => v,
+            Err(e) => {
+                println!("[btcpay] get_invoices failed to parse JSON: {}", e);
+                return Err(Error::JSON(e));
+            }
+        };
 
         match serde_json::from_value::<Vec<Invoice>>(intermediate["data"].take()) {
             Ok(invoices) => {
