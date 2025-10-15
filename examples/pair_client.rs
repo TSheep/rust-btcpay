@@ -20,12 +20,12 @@ async fn main() {
     )
     .unwrap();
 
-    println!(
-        "{:?}",
-        client
-            .pair_client(
-                &env::var("BTCPAY_PAIRCODE").expect("BTCPAY_PAIRCODE environment variable not set")
-            )
-            .await
-    );
+    // println!(
+    //     "{:?}",
+    //     client
+    //         .pair_client(
+    //             &env::var("BTCPAY_PAIRCODE").expect("BTCPAY_PAIRCODE environment variable not set")
+    //         )
+    //         .await
+    // );
 }

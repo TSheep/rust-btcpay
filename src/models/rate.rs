@@ -19,6 +19,6 @@ mod test {
         let rate = r#"{"name":"US Dollar","cryptoCode":"BTC","currencyPair":"BTC_USD","code":"USD","rate":7672.823}"#;
 
         let parsed: Rate = serde_json::from_str(rate).unwrap();
-        println!("{:#?}", parsed);
+        // println!("{:#?}", parsed);
     }
 }

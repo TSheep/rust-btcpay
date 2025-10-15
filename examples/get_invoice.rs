@@ -25,7 +25,7 @@ async fn main() {
         .create_invoice(CreateInvoiceArgs::new("USD", 20.0))
         .await
         .unwrap();
-    println!("Created invoice {}", invoice.id);
+    // println!("Created invoice {}", invoice.id);
 
-    println!("{:?}", client.get_invoice(&invoice.id).await);
+    // println!("{:?}", client.get_invoice(&invoice.id).await);
 }

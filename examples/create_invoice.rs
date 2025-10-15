@@ -21,10 +21,10 @@ async fn main() {
     )
     .unwrap();
 
-    println!(
-        "{:?}",
-        client
-            .create_invoice(CreateInvoiceArgs::new("USD", 20.0))
-            .await
-    );
+    // println!(
+    //     "{:?}",
+    //     client
+    //         .create_invoice(CreateInvoiceArgs::new("USD", 20.0))
+    //         .await
+    // );
 }

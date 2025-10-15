@@ -201,7 +201,7 @@ mod test {
     fn test_parse_invoice() {
         get_test_invoices_json().iter().for_each(|string_json| {
             let parsed: Invoice = serde_json::from_str(string_json).unwrap();
-            println!("{:#?}", parsed);
+            // println!("{:#?}", parsed);
         });
     }
 
