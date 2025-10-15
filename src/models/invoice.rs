@@ -1,6 +1,30 @@
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+
+// Helper function to deserialize bool from either bool or string
+fn bool_from_flexible<'de, D>(deserializer: D) -> Result<bool, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum BoolOrString {
+        Bool(bool),
+        String(String),
+    }
+
+    match BoolOrString::deserialize(deserializer)? {
+        BoolOrString::Bool(b) => Ok(b),
+        BoolOrString::String(s) => match s.to_lowercase().as_str() {
+            "true" | "1" | "yes" | "marked" => Ok(true),
+            "false" | "0" | "no" | "" => Ok(false),
+            _ => Err(Error::custom(format!("Cannot parse '{}' as boolean", s))),
+        },
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -27,6 +51,7 @@ pub struct Invoice {
     pub low_fee_detected: Option<bool>,
     pub btc_paid: Option<String>,
     pub rate: f32,
+    #[serde(deserialize_with = "bool_from_flexible")]
     pub exception_status: bool,
     pub payment_urls: Option<PaymentUrl>,
     pub refund_address_request_pending: Option<bool>,
@@ -59,6 +84,9 @@ pub enum InvoiceStatus {
     Confirmed,
     Completed,
     Invalid,
+    Settled,
+    #[serde(rename = "marked")]
+    Marked,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -109,6 +137,7 @@ pub struct PaymentUrl {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InvoiceFlags {
+    #[serde(deserialize_with = "bool_from_flexible")]
     pub refundable: bool,
 }
 
@@ -158,6 +187,7 @@ pub struct Buyer {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SupportedCurrency {
+    #[serde(deserialize_with = "bool_from_flexible")]
     pub enabled: bool,
     pub reason: Option<serde_json::Value>,
 }

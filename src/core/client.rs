@@ -79,36 +79,85 @@ impl BTCPayClient {
             return Err(Error::InvalidCurrency(args.currency.into()));
         }
 
-        let mut intermediate = self
+        let response = self
             .signed_post_request("/invoices", &args)
-            .await?
+            .await?;
+
+        println!("[btcpay] create_invoice response status: {}", response.status());
+
+        let mut intermediate = response
             .json::<serde_json::Value>()
             .await?;
 
-        Ok(serde_json::from_value(intermediate["data"].take())?)
+        println!("[btcpay] create_invoice raw response: {}", serde_json::to_string_pretty(&intermediate).unwrap_or_else(|_| "Unable to serialize".to_string()));
+
+        match serde_json::from_value(intermediate["data"].take()) {
+            Ok(invoice) => {
+                println!("[btcpay] create_invoice successfully deserialized invoice");
+                Ok(invoice)
+            }
+            Err(e) => {
+                println!("[btcpay] create_invoice deserialization error: {}", e);
+                Err(Error::JSON(e))
+            }
+        }
     }
 
     pub async fn get_invoice(&self, invoice_id: &str) -> Result<Invoice, Error> {
-        let mut intermediate = self
+        println!("[btcpay] get_invoice called for invoice_id: {}", invoice_id);
+
+        let response = self
             .signed_get_request(
                 &format!("/invoices/{}", invoice_id),
                 &HashMap::<String, String>::new(),
             )
-            .await?
+            .await?;
+
+        println!("[btcpay] get_invoice response status: {}", response.status());
+
+        let mut intermediate = response
             .json::<serde_json::Value>()
             .await?;
 
-        Ok(serde_json::from_value(intermediate["data"].take())?)
+        println!("[btcpay] get_invoice raw response: {}", serde_json::to_string_pretty(&intermediate).unwrap_or_else(|_| "Unable to serialize".to_string()));
+
+        match serde_json::from_value(intermediate["data"].take()) {
+            Ok(invoice) => {
+                println!("[btcpay] get_invoice successfully deserialized invoice");
+                Ok(invoice)
+            }
+            Err(e) => {
+                println!("[btcpay] get_invoice deserialization error: {}", e);
+                Err(Error::JSON(e))
+            }
+        }
     }
 
     pub async fn get_invoices(&self, args: GetInvoicesArgs) -> Result<Vec<Invoice>, Error> {
-        let mut intermediate = self
+        println!("[btcpay] get_invoices called");
+
+        let response = self
             .signed_get_request("/invoices", &args)
-            .await?
+            .await?;
+
+        println!("[btcpay] get_invoices response status: {}", response.status());
+
+        let mut intermediate = response
             .json::<serde_json::Value>()
             .await?;
 
-        Ok(serde_json::from_value(intermediate["data"].take())?)
+        println!("[btcpay] get_invoices raw response: {}", serde_json::to_string_pretty(&intermediate).unwrap_or_else(|_| "Unable to serialize".to_string()));
+
+        match serde_json::from_value::<Vec<Invoice>>(intermediate["data"].take()) {
+            Ok(invoices) => {
+                println!("[btcpay] get_invoices successfully deserialized {} invoices", invoices.len());
+                Ok(invoices)
+            }
+            Err(e) => {
+                println!("[btcpay] get_invoices deserialization error: {}", e);
+                Err(Error::JSON(e))
+            }
+        }
     }
 
     fn create_signed_headers(&self, uri: &str, payload: &str) -> header::HeaderMap {
