@@ -121,7 +121,7 @@ impl BTCPayClient {
         // println!("[btcpay] get_invoice response status: {}", response.status());
 
         let response_text = response.text().await?;
-         println!("[btcpay] get_invoice raw response: {}", response_text);
+        // println!("[btcpay] get_invoice raw response: {}", response_text);
 
         let mut intermediate: serde_json::Value = match serde_json::from_str(&response_text) {
             Ok(v) => v,

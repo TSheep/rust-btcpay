@@ -19,7 +19,7 @@ where
     match BoolOrString::deserialize(deserializer)? {
         BoolOrString::Bool(b) => Ok(b),
         BoolOrString::String(s) => match s.to_lowercase().as_str() {
-            "true" | "1" | "yes" | "marked" => Ok(true),
+            "true" | "1" | "yes" | "marked" | "paidover" => Ok(true),
             "false" | "0" | "no" | "" => Ok(false),
             _ => Err(Error::custom(format!("Cannot parse '{}' as boolean", s))),
         },
@@ -50,7 +50,6 @@ pub struct Invoice {
     pub current_time: u64,
     pub low_fee_detected: Option<bool>,
     pub btc_paid: Option<String>,
-    pub paid_over: Option<f64>,
     pub rate: f32,
     #[serde(deserialize_with = "bool_from_flexible")]
     pub exception_status: bool,
