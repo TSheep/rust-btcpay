@@ -50,6 +50,7 @@ pub struct Invoice {
     pub current_time: u64,
     pub low_fee_detected: Option<bool>,
     pub btc_paid: Option<String>,
+    pub paid_over: Option<f64>,
     pub rate: f32,
     #[serde(deserialize_with = "bool_from_flexible")]
     pub exception_status: bool,
